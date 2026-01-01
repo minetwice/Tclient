@@ -10,13 +10,12 @@ import net.minecraft.util.Identifier;
 
 public class NetworkHandler {
     
-    public static final Identifier CAPE_SYNC_ID = new Identifier(TCosmaticMod.MOD_ID, "cape_sync");
+    public static final Identifier CAPE_SYNC_ID =
+        Identifier.of(TCosmaticMod.MOD_ID, "cape_sync");
     
     public static void registerPackets() {
         TCosmaticMod.LOGGER.info("Registering network packets for cape sync");
         
-        // Register client-to-server packet handler
-        ClientPlayNetworking.registerGlobalReceiver(CAPE_SYNC_ID, (client, handler, buf, responseSender) -> {
             // Read cape data from buffer
             String playerUuid = buf.readString();
             String capeName = buf.readString();
