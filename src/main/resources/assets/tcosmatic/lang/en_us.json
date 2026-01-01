@@ -1,4 +1,52 @@
 {
+  "key.tcosmatic.open_menu": "Open TCosmatic Menu",
+  "category.tcosmatic": "TCosmatic",
+  
   "tcosmatic.dashboard.title": "TCosmatic Dashboard",
-  "tcosmatic.editor.title": "Cape Editor"
+  "tcosmatic.dashboard.no_cape": "No Cape Selected",
+  "tcosmatic.dashboard.preview": "Preview",
+  "tcosmatic.dashboard.apply": "Apply Cape",
+  "tcosmatic.dashboard.remove": "Remove Cape",
+  "tcosmatic.dashboard.close": "Close",
+  "tcosmatic.dashboard.info": "Place PNG capes in: .minecraft/TCosmatic/capes/",
+  
+  "tcosmatic.editor.title": "Cape Editor",
+  "tcosmatic.editor.tools": "Tools",
+  "tcosmatic.editor.transform": "Transform Controls",
+  "tcosmatic.editor.scale": "Scale",
+  "tcosmatic.editor.rotation_x": "Rotation X",
+  "tcosmatic.editor.rotation_y": "Rotation Y",
+  "tcosmatic.editor.rotation_z": "Rotation Z",
+  "tcosmatic.editor.offset_x": "Offset X",
+  "tcosmatic.editor.offset_y": "Offset Y",
+  "tcosmatic.editor.save": "Save & Apply",
+  "tcosmatic.editor.cancel": "Cancel",
+  "tcosmatic.editor.reset": "Reset Transform",
+  "tcosmatic.editor.current_tool": "Current Tool",
+  
+  "tcosmatic.tools.brush": "Brush",
+  "tcosmatic.tools.bucket": "Fill Bucket",
+  "tcosmatic.tools.eraser": "Eraser",
+  "tcosmatic.tools.eyedropper": "Eyedropper",
+  "tcosmatic.tools.line": "Line Tool",
+  "tcosmatic.tools.rectangle": "Rectangle",
+  
+  "tcosmatic.colorpicker.title": "Color Picker",
+  "tcosmatic.colorpicker.current": "Current Color",
+  
+  "tcosmatic.config.show_first_person": "Show Cape in First Person",
+  "tcosmatic.config.show_others": "Show Other Players' Capes",
+  "tcosmatic.config.opacity": "Cape Opacity",
+  "tcosmatic.config.animate": "Animate Cape",
+  "tcosmatic.config.physics": "Cape Physics",
+  
+  "tcosmatic.message.cape_loaded": "Cape loaded: %s",
+  "tcosmatic.message.cape_applied": "Cape applied successfully!",
+  "tcosmatic.message.cape_removed": "Cape removed",
+  "tcosmatic.message.invalid_dimensions": "Invalid cape dimensions. Expected 64x32 or 22x17",
+  "tcosmatic.message.file_error": "Error loading cape file",
+  
+  "tcosmatic.tooltip.cape_editor": "Advanced cape customization tools",
+  "tcosmatic.tooltip.transform": "Adjust cape position, rotation, and scale",
+  "tcosmatic.tooltip.texture_edit": "Edit cape texture directly"
 }
