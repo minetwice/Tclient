@@ -41,7 +41,10 @@ public class CapeManager {
                 if ((image.getWidth() == 64 && image.getHeight() == 32) || 
                     (image.getWidth() == 22 && image.getHeight() == 17)) {
                     
-                    Identifier texId = new Identifier(TCosmaticMod.MOD_ID, "cape_" + capeName);
+                    Identifier texId = Identifier.of(
+        TCosmaticMod.MOD_ID,
+        "cape_" + capeName
+);
                     MinecraftClient.getInstance().getTextureManager()
                         .registerTexture(texId, new NativeImageBackedTexture(image));
                     
