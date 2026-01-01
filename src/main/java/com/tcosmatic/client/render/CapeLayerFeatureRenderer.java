@@ -2,23 +2,22 @@ package com.tcosmatic.client.render;
 
 import com.tcosmatic.client.TCosmaticClient;
 import com.tcosmatic.util.CapeManager;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.MathHelper;
 
 public class CapeLayerFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
 
-    public CapeLayerFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context,
-                                    EntityModelLoader loader) {
+    public CapeLayerFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context) {
         super(context);
     }
 
@@ -42,24 +41,10 @@ public class CapeLayerFeatureRenderer extends FeatureRenderer<AbstractClientPlay
         if (cape.getRotationY() != 0) matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(cape.getRotationY()));
         if (cape.getRotationZ() != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(cape.getRotationZ()));
 
-        double deltaX = player.getX() - player.prevX;
-        double deltaY = player.getY() - player.prevY;
-        double deltaZ = player.getZ() - player.prevZ;
-        double velocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-
-        float rotation = (float) (player.prevBodyYaw + (player.bodyYaw - player.prevBodyYaw) * tickDelta -
-                (player.prevYaw + (player.getYaw() - player.prevYaw) * tickDelta));
-
-        if (TCosmaticClient.getCapeManager().getConfig().isCapePhysics()) {
-            float capeAngle = 6.0F + (float) velocity * 100.0F;
-            capeAngle = MathHelper.clamp(capeAngle, 0.0F, 90.0F);
-            if (!player.isOnGround()) capeAngle = 90.0F;
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(capeAngle));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation * 0.5F));
-        }
-
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntitySolid(capeTexture));
-        renderCape(matrices, vertexConsumer, light, TCosmaticClient.getCapeManager().getConfig().getCapeOpacity());
+        float opacity = TCosmaticClient.getCapeManager().getConfig().getCapeOpacity();
+
+        renderCape(matrices, vertexConsumer, light, opacity);
         matrices.pop();
     }
 
@@ -85,9 +70,9 @@ public class CapeLayerFeatureRenderer extends FeatureRenderer<AbstractClientPlay
         vertices.vertex(matrices.peek().getPositionMatrix(), x, y, z)
                 .color(1.0F, 1.0F, 1.0F, opacity)
                 .texture(u, v)
-                .overlay(0)
+                .overlay(OverlayTexture.DEFAULT_UV)
                 .light(light)
-                .normal(matrices.peek().getNormalMatrix(), 0.0F, 1.0F, 0.0F)
+                .normal(matrices.peek().getNormalMatrix(), 0, 1, 0)
                 .next();
     }
 }
