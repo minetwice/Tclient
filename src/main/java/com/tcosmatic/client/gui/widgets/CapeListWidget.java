@@ -2,95 +2,76 @@ package com.tcosmatic.client.gui.widgets;
 
 import com.tcosmatic.util.CapeManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.text.Text;
 
 public class CapeListWidget extends AlwaysSelectedEntryListWidget<CapeListWidget.CapeEntry> {
-    
+
     private CapeManager.CapeData selectedCape;
-    
-    public CapeListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-        super(client, width, height, top, bottom, itemHeight);
+
+    public CapeListWidget(MinecraftClient client, int width, int height, int top, int bottom) {
+        super(client, width, height, top, bottom, 32);
     }
-    
-    public void addEntry(CapeManager.CapeData cape) {
-        this.addEntry(new CapeEntry(cape, this));
+
+    public void addCape(CapeManager.CapeData cape) {
+        addEntry(new CapeEntry(cape));
     }
-    
-    public void setSelectedCape(CapeManager.CapeData cape) {
-        this.selectedCape = cape;
-        if (cape != null) {
-            for (CapeEntry entry : this.children()) {
-                if (entry.cape == cape) {
-                    this.setSelected(entry);
-                    break;
-                }
-            }
-        }
-    }
-    
+
     public CapeManager.CapeData getSelectedCape() {
         return selectedCape;
     }
-    
-    @Override
-    public int getRowWidth() {
-        return this.width - 10;
-    }
-    
-    @Override
-    protected int getScrollbarPositionX() {
-        return this.width - 6;
-    }
-    
-    public class CapeEntry extends Entry<CapeEntry> {
+
+    public class CapeEntry extends AlwaysSelectedEntryListWidget.Entry<CapeEntry> {
+
         private final CapeManager.CapeData cape;
-        private final CapeListWidget parent;
-        
-        public CapeEntry(CapeManager.CapeData cape, CapeListWidget parent) {
+
+        public CapeEntry(CapeManager.CapeData cape) {
             this.cape = cape;
-            this.parent = parent;
         }
-        
+
         @Override
-        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, 
-                          int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            
-            MinecraftClient client = MinecraftClient.getInstance();
-            
-            // Background
-            if (parent.selectedCape == cape) {
-                context.fill(x, y, x + entryWidth, y + entryHeight, 0x80FFFFFF);
+        public void render(DrawContext context, int index, int y, int x, int w, int h,
+                           int mouseX, int mouseY, boolean hovered, float delta) {
+
+            TextRenderer tr = MinecraftClient.getInstance().textRenderer;
+
+            if (cape == selectedCape) {
+                context.fill(x, y, x + w, y + h, 0x803F51B5);
             } else if (hovered) {
-                context.fill(x, y, x + entryWidth, y + entryHeight, 0x40FFFFFF);
+                context.fill(x, y, x + w, y + h, 0x40FFFFFF);
             }
-            
-            // Cape icon (small preview)
+
             if (cape.getTextureId() != null) {
-                context.drawTexture(cape.getTextureId(), x + 2, y + 2, 0, 0, 28, 28, 64, 32);
+                context.drawTexture(
+                        cape.getTextureId(),
+                        x + 4, y + 2,
+                        0, 0,
+                        24, 16,
+                        64, 32
+                );
             }
-            
-            // Cape name
+
             context.drawTextWithShadow(
-                client.textRenderer,
-                cape.getName(),
-                x + 35,
-                y + 10,
-                0xFFFFFF
+                    tr,
+                    Text.literal(cape.getName()),
+                    x + 36,
+                    y + 10,
+                    0xFFFFFF
             );
         }
-        
+
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            parent.selectedCape = this.cape;
-            parent.setSelected(this);
+            selectedCape = cape;
+            setSelected(this);
             return true;
         }
-        
+
         @Override
         public Text getNarration() {
-            return Text.literal("Cape: " + cape.getName());
+            return Text.literal("Cape " + cape.getName());
         }
     }
 }
