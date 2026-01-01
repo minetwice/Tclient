@@ -8,47 +8,88 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
+import java.util.UUID;
+
 public class NetworkHandler {
-    
+
+    // ===============================
+    // CHANNEL ID
+    // ===============================
     public static final Identifier CAPE_SYNC_ID =
-        Identifier.of(TCosmaticMod.MOD_ID, "cape_sync");
-    
+            Identifier.of(TCosmaticMod.MOD_ID, "cape_sync");
+
+    // ===============================
+    // REGISTER (CLIENT SIDE)
+    // ===============================
     public static void registerPackets() {
-        TCosmaticMod.LOGGER.info("Registering network packets for cape sync");
-        
-            // Read cape data from buffer
-            String playerUuid = buf.readString();
-            String capeName = buf.readString();
-            
-            client.execute(() -> {
-                // Update cape for other players
-                TCosmaticMod.LOGGER.info("Received cape sync for player: " + playerUuid + " - Cape: " + capeName);
-                // Store in a map of UUID -> Cape for rendering other players
-            });
-        });
-    }
-    
-    public static void sendCapeSync(String capeName) {
-        if (!ClientPlayNetworking.canSend(CAPE_SYNC_ID)) {
-            return;
-        }
-        
-        // Create packet to send cape info to server/other clients
-        // Note: This is client-side only, so sync only works if both players have the mod
-        TCosmaticMod.LOGGER.info("Sending cape sync: " + capeName);
-    }
-    
-    // Custom payload for cape data
-    public record CapeSyncPayload(String playerUuid, String capeName) implements CustomPayload {
-        public static final CustomPayload.Id<CapeSyncPayload> ID = new CustomPayload.Id<>(CAPE_SYNC_ID);
-        public static final PacketCodec<PacketByteBuf, CapeSyncPayload> CODEC = PacketCodec.of(
-            (value, buf) -> {
-                buf.writeString(value.playerUuid);
-                buf.writeString(value.capeName);
-            },
-            buf -> new CapeSyncPayload(buf.readString(), buf.readString())
+        TCosmaticMod.LOGGER.info("Registering cape sync packets");
+
+        // Register payload codec
+        PayloadTypeRegistry.playC2S().register(
+                CapeSyncPayload.ID,
+                CapeSyncPayload.CODEC
         );
-        
+
+        PayloadTypeRegistry.playS2C().register(
+                CapeSyncPayload.ID,
+                CapeSyncPayload.CODEC
+        );
+
+        // Receiver
+        ClientPlayNetworking.registerGlobalReceiver(
+                CapeSyncPayload.ID,
+                (payload, context) -> {
+                    context.client().execute(() -> {
+                        TCosmaticMod.LOGGER.info(
+                                "Received cape sync | Player: "
+                                        + payload.playerUuid()
+                                        + " Cape: "
+                                        + payload.capeName()
+                        );
+
+                        // TODO:
+                        // CapeManager.setCape(UUID.fromString(payload.playerUuid()), payload.capeName());
+                    });
+                }
+        );
+    }
+
+    // ===============================
+    // SEND CAPE DATA
+    // ===============================
+    public static void sendCapeSync(String capeName) {
+        if (ClientPlayNetworking.canSend(CapeSyncPayload.ID)) {
+            String uuid = UUID.randomUUID().toString(); // replace with real player UUID
+
+            ClientPlayNetworking.send(
+                    new CapeSyncPayload(uuid, capeName)
+            );
+
+            TCosmaticMod.LOGGER.info("Sent cape sync: " + capeName);
+        }
+    }
+
+    // ===============================
+    // CUSTOM PAYLOAD (1.21.1)
+    // ===============================
+    public record CapeSyncPayload(String playerUuid, String capeName)
+            implements CustomPayload {
+
+        public static final CustomPayload.Id<CapeSyncPayload> ID =
+                new CustomPayload.Id<>(CAPE_SYNC_ID);
+
+        public static final PacketCodec<PacketByteBuf, CapeSyncPayload> CODEC =
+                PacketCodec.of(
+                        (value, buf) -> {
+                            buf.writeString(value.playerUuid);
+                            buf.writeString(value.capeName);
+                        },
+                        buf -> new CapeSyncPayload(
+                                buf.readString(),
+                                buf.readString()
+                        )
+                );
+
         @Override
         public Id<? extends CustomPayload> getId() {
             return ID;
